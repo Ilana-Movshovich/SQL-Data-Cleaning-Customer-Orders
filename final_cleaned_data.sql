@@ -78,7 +78,14 @@ LEFT JOIN name_fixing AS n
 deduplicated_data AS (
 SELECT 
   *,
-  ROW_NUMBER() OVER (PARTITION BY order_date, product_name, email ORDER BY order_id) AS rn
+  ROW_NUMBER() OVER 
+  (
+    PARTITION BY 
+      order_date, 
+      product_name, 
+      email 
+      ORDER BY order_id
+  ) AS rn
 FROM clean_data
 )
 
