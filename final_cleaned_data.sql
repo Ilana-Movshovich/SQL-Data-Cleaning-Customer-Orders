@@ -1,9 +1,10 @@
 -- Final Cleaned Data
 
 -- Step 1: Fix the names using email & customer_name as a unique identifier
+
 WITH name_fixing AS (
   SELECT 
-    email AS ref_email,
+    REPLACE(LOWER(email), '@@', '@') AS ref_email,
     customer_name AS original_name, 
     STRING_AGG(
       CONCAT(UPPER(LEFT(word, 1)), 
@@ -21,11 +22,14 @@ WITH name_fixing AS (
 ),
 
 -- Step 2: Standardize the rest of the data
+
 clean_data AS (
 SELECT
   o.order_id,
-  n.fixed_name AS customer_name, 
-  LOWER(o.email) AS email,
+  -- Use COALESCE to keep the original name if the join fails
+  COALESCE(n.fixed_name, o.customer_name) AS fixed_name,
+  -- Use COALESCE to keep the original email (even if it's NULL) if the join fails
+  COALESCE(n.ref_email, REPLACE(LOWER(o.email), '@@', '@')) AS ref_email,
   o.price,
   
   -- standardize order_status
@@ -67,10 +71,11 @@ SELECT
     WHEN LOWER(country) IN ('united kingdom', 'uk') THEN 'United Kingdom'
   ELSE CONCAT(UPPER(LEFT(country,1)), LOWER(SUBSTR(country,2)))
   END AS country
+
 FROM `data-cleaning-sql-488109.cust_orders.orders` AS o
 -- Joining using both email and customer name for a secure connection
 LEFT JOIN name_fixing AS n 
-  ON o.email = n.ref_email 
+  ON REPLACE(LOWER(o.email), '@@', '@') = n.ref_email 
   AND o.customer_name = n.original_name
 ),
 
@@ -83,7 +88,7 @@ SELECT
     PARTITION BY 
       order_date, 
       product_name, 
-      email 
+      ref_email
       ORDER BY order_id
   ) AS rn
 FROM clean_data
@@ -93,13 +98,18 @@ FROM clean_data
 SELECT 
   order_id,
 -- Convert string 'NULL' into a real NULL
-  NULLIF(customer_name, 'NULL') AS customer_name,
-  NULLIF(email, 'NULL') AS email,
+  CASE WHEN LOWER(fixed_name) = 'null' 
+    THEN NULL ELSE fixed_name END AS customer_name,
+  CASE WHEN LOWER(ref_email) = 'null' 
+    THEN NULL ELSE ref_email END AS email,
   order_date,
-  NULLIF(product_name, 'NULL') AS product_name,
+  CASE WHEN LOWER(product_name) = 'null' 
+    THEN NULL ELSE product_name END AS product_name,
   quantity,
   price,
-  NULLIF(country, 'NULL') AS country,
-  NULLIF(order_status, 'NULL') AS order_status
+  CASE WHEN LOWER(country) = 'null' 
+    THEN NULL ELSE country END AS country,
+  CASE WHEN LOWER(order_status) = 'null' 
+    THEN NULL ELSE order_status END AS order_status
 FROM deduplicated_data
 WHERE rn = 1;
