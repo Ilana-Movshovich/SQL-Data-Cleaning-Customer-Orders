@@ -1,7 +1,6 @@
 -- Final Cleaned Data
 
 -- Step 1: Fix the names using email & customer_name as a unique identifier
-
 WITH name_fixing AS (
   SELECT 
     REPLACE(LOWER(email), '@@', '@') AS ref_email,
@@ -22,7 +21,6 @@ WITH name_fixing AS (
 ),
 
 -- Step 2: Standardize the rest of the data
-
 clean_data AS (
 SELECT
   o.order_id,
