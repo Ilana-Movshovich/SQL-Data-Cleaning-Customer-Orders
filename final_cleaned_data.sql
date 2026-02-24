@@ -1,6 +1,7 @@
 -- Final Cleaned Data
 
 -- Step 1: Fix the names using email & customer_name as a unique identifier
+
 WITH name_fixing AS (
   SELECT 
     REPLACE(LOWER(email), '@@', '@') AS ref_email,
@@ -21,11 +22,12 @@ WITH name_fixing AS (
 ),
 
 -- Step 2: Standardize the rest of the data
+
 clean_data AS (
 SELECT
   o.order_id,
   -- Use COALESCE to keep the original name if the join fails
-  COALESCE(n.fixed_name, o.customer_name) AS fixed_name,
+  COALESCE(n.fixed_name, INITCAP(o.customer_name)) AS fixed_name,
   -- Use COALESCE to keep the original email (even if it's NULL) if the join fails
   COALESCE(n.ref_email, REPLACE(LOWER(o.email), '@@', '@')) AS ref_email,
   o.price,
