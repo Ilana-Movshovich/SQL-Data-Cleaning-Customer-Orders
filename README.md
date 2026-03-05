@@ -1,30 +1,20 @@
-🧹 Advanced SQL Data Cleaning: Customer Orders
+🧹 SQL Data Cleaning: Customer Orders
 This project demonstrates advanced data engineering techniques using Google BigQuery to transform a highly "noisy" raw dataset into a clean, analysis-ready source of truth.
 
-📌 Project Overview
-The raw customer_orders table contained significant data integrity issues, including inconsistent data types, manual entry errors, and systemic "Pseudo-NULLs" (text strings posing as null values).
+🛠️ Key Cleaning Highlights
+Pseudo-NULL Resolution: Identified and converted string 'NULL' text into actual system NULLs to ensure accurate data aggregation.
 
-🛠️ Challenges & Technical Solutions
-1. Data Type & Schema Enforcement
-Pseudo-NULL Resolution: Developed logic to identify and convert the string 'NULL' (text) into actual System NULLs, ensuring accurate counts and aggregate calculations.
+Schema Enforcement: Standardized inconsistent order_date strings into a unified DATE format and handled "human-entry" errors in the quantity column.
 
-Type Casting:
+String Normalization: Unified customer and product entities (e.g., branding and casing fixes) using INITCAP and TRIM.
 
-Converted order_date from STRING to DATE after standardizing inconsistent date formats.
+Email Validation: Fixed broken email syntax (e.g., double @@) and normalized all entries to lowercase for consistent user identification.
 
-Fixed "Human-Entry" errors (e.g., converting the word "two" to the integer 2) and casted the quantity column to INT.
-
-2. String Manipulation & Normalization
-Entity Standardization: Used INITCAP and TRIM functions to consolidate duplicates caused by casing (e.g., "john smith" vs. "John Smith") and branding inconsistencies (e.g., "Iphone 14" vs. "iPhone 14").
-
-Email Validation: Cleaned broken email formats (fixing issues like @@) and normalized the email field to lowercase for consistent user identification.
-
-3. De-duplication & Integrity
-Row-Level De-duplication: Implemented logic to identify and remove redundant order entries based on unique transaction keys, ensuring the final dataset reflects actual sales volume.
+Deduplication: Implemented logic to remove redundant order entries, ensuring each record represents a unique transaction.
 
 📂 Project Structure
-cleaning_script.sql: The full BigQuery SQL script.
+cleaning_script.sql: The full BigQuery SQL script containing all transformation logic.
 
-raw_data_sample.csv: A sample of the messy data before cleaning.
+raw_data_sample.csv: A sample of the messy dataset before any cleaning was applied.
 
-clean_data_sample.csv: The final output after script execution.
+clean_data_sample.csv: The final, structured output after script execution.
