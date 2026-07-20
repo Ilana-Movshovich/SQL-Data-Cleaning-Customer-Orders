@@ -7,7 +7,7 @@ This project focuses on cleaning and standardizing a messy customer orders datas
 
 * **`Granular Name Standardization`**: Implemented a **custom Title Case logic** using a **CTE** with `STRING_AGG` and `UNNEST`.
   
-* **`1NF Transformation`**: Temporarily split full names into individual components using a 1NF-inspired transformation to isolate and clean each word (handling casing and special characters) before reassembling standardized names.
+* **`1NF Transformation`**: Temporarily transformed full names into a 1NF-like structure to isolate and clean individual words before reassembling them into standardized names.
 * **`Email Domain Correction`**: Standardized all emails to **lowercase** and used `REPLACE` to resolve specific syntax errors like **'@@'**.
   
 * **`Data Type Harmonization`**: Converted **text-based numbers** (e.g., 'two') into integers and unified geographical variations like **'USA/US'** into the standard **'United States'**.
